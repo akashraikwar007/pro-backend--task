@@ -16,16 +16,16 @@ router.delete("/clear", async (req, res) => {
 });
 
 // Check existing users route
-router.get("/users", async (req, res) => {
+router.get("/users", verifyJWT, async (req, res) => {
   try {
-    const users = await User.find({}, { password: 0 }); // Exclude passwords
-    console.log('Current users in database:', users);
+    const users = await User.find({ createdBy: req.user._id }, { password: 0 });
     res.json(users);
   } catch (error) {
-    console.error('Error fetching users:', error);
+    console.error("Error fetching users:", error);
     res.status(500).json({ message: "Error fetching users", details: error.message });
   }
 });
+
 
 // Signup route
 router.post("/signup", async (req, res) => {
@@ -53,7 +53,15 @@ router.post("/signup", async (req, res) => {
     }
 
     // Create a new user
-    const user = new User({ username, password, firstName, lastName, email, gender });
+    const user = new User({
+      username,
+      password,
+      firstName,
+      lastName,
+      email,
+      gender,
+      createdBy: req.user._id
+    });
     await user.save();
 
     res.status(201).json({ message: "New user registered successfully" });
@@ -94,7 +102,7 @@ router.post("/login", async (req, res) => {
       process.env.SECRET_KEY,
       { expiresIn: '1h' }
     );
-    
+
     res.json({ token });
   } catch (error) {
     console.error('Login error details:', error);

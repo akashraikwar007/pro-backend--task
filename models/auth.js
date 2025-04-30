@@ -8,7 +8,9 @@ const authSchema = new mongoose.Schema({
   lastName: { type: String, required: true },
   email: { type: String, required: true, unique: true, trim: true },
   gender: { type: String, required: true },
-  
+  // For  Admin or Unique ID
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "Auth" }
+
 });
 
 // Password hash middleware
