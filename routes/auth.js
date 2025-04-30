@@ -16,16 +16,16 @@ router.delete("/clear", async (req, res) => {
 });
 
 // Check existing users route
-router.get("/users", verifyJWT, async (req, res) => {
+router.get("/users", async (req, res) => {
   try {
-    const users = await User.find({ createdBy: req.user._id }, { password: 0 });
+    const users = await User.find({createdBy: req.user._id}, { password: 0 }); // Exclude passwords
+    console.log('Current users in database:', users);
     res.json(users);
   } catch (error) {
-    console.error("Error fetching users:", error);
+    console.error('Error fetching users:', error);
     res.status(500).json({ message: "Error fetching users", details: error.message });
   }
 });
-
 
 // Signup route
 router.post("/signup", async (req, res) => {
